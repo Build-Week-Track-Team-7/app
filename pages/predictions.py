@@ -61,7 +61,18 @@ for feature in feature_importance:
     _id = feature+'-radio-button-group'
     radio_group_id_list.append(_id)
     features.extend([
-        html.P(feature.capitalize(), style=style),
+        html.P(
+            [
+                html.Span(
+                    feature.capitalize(), 
+                    id=f'{feature}-tooltip-target',
+                )
+            ], style=style
+        ),
+        dbc.Tooltip(
+            feature_descriptions[feature],
+            target=f'{feature}-tooltip-target'
+        ),
         dbc.RadioItems(options=[
                 {"label": option.capitalize(), "value": option} for option in options
             ], 

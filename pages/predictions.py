@@ -82,11 +82,14 @@ predictions = dbc.Col([
         dbc.Col([
             dbc.Label("Song Title", style={'margin-top': margin_top}),
             dbc.Input(id="title", placeholder=current_title, type="text", bs_size='sm'),
-        ], width=7),
+        ], width=5),
         dbc.Col([
             dbc.Label("Song Artist", style={'margin-top': margin_top}),
             dbc.Input(id="artist", placeholder=current_artist, type="text", bs_size='sm'),
         ], width=5),
+        dbc.Col([
+            dbc.Button("Predict", id='predict-button')
+        ])
     ]),
     dcc.Markdown(
         children=['&nbsp  \n'.join([': '.join([str(l), str(r)]) for l, r in current_selections.items()])],

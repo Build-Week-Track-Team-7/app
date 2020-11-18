@@ -1,1 +1,1 @@
-web: gunicorn run:server -t 120
+web: gunicorn run:server --preload

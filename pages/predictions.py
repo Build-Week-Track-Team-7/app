@@ -1,4 +1,3 @@
-# Imports from 3rd party libraries
 from logging import PlaceHolder
 import dash
 import dash_bootstrap_components as dbc
@@ -7,7 +6,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 
-# Imports from this application
+from models import *
 from app import app
 
 left = 'Lower'
@@ -26,7 +25,7 @@ radio_color = 'info'
 radio_group_id_list = []
 
 margin_left = str(len(left) * -2) + 'px'
-margin_top = '20px'
+margin_top = '15px'
 margin_bottom = '1px'
 
 style = {
@@ -82,11 +81,14 @@ predictions = dbc.Col([
         dbc.Col([
             dbc.Label("Song Title", style={'margin-top': margin_top}),
             dbc.Input(id="title", placeholder=current_title, type="text", bs_size='sm'),
-        ], width=7),
+        ], width=5),
         dbc.Col([
             dbc.Label("Song Artist", style={'margin-top': margin_top}),
             dbc.Input(id="artist", placeholder=current_artist, type="text", bs_size='sm'),
         ], width=5),
+        dbc.Col([
+            dbc.Button("Predict", id='predict-button', color='success', size="lg", style={'margin-top': '30px'})
+        ])
     ]),
     dcc.Markdown(
         children=['&nbsp  \n'.join([': '.join([str(l), str(r)]) for l, r in current_selections.items()])],
@@ -105,10 +107,15 @@ layout = dbc.Col([header, body])
 
 @app.callback(
     [Output('selected-features', 'children')],
-    [Input(radio_group_id, 'value') for radio_group_id in radio_group_id_list])
-def render_predict(*values):
+    [Input('predict-button', 'n_clicks')],
+    [State(radio_group_id, 'value') for radio_group_id in radio_group_id_list],)
+def render_prediction(n_clicks, *values):
     for feature, value in zip(feature_list, values):
             current_selections[feature] = value
+
+    data = Antony.get_prediction(current_selections)
+    print(data)
+
     return ['&nbsp  \n'.join([': '.join([str(l), str(r)]) for l, r in current_selections.items()])]
 
 

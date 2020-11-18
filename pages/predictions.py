@@ -1,34 +1,114 @@
 # Imports from 3rd party libraries
+from logging import PlaceHolder
 import dash
 import dash_bootstrap_components as dbc
+from dash_bootstrap_components._components.FormGroup import FormGroup
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 
 # Imports from this application
 from app import app
 
-# 2 column layout. 1st column width = 4/12
+left = 'Lower'
+middle = 'Same'
+right = 'Higher'
+
+options = [left, middle, right]
+
+feature_list = ['Danceability', 'test2', 'test3', 'test4', 'test5']
+
+_id = '-id'
+default_value = 'Same'
+
+radio_color = 'info'
+
+radio_group_id_list = []
+
+margin_left = str(len(left) * -2) + 'px'
+margin_top = '20px'
+margin_bottom = '1px'
+
+style = {
+    'margin-top': margin_top,
+    'margin-bottom': margin_bottom,
+    'margin-left': margin_left,
+    'font-weight': 'bold'
+}
+
+current_title = "Song Title..."
+current_artist = "Song Artist..."
+
+current_selections = {
+    feature: default_value for feature in feature_list
+}
+
+
 # https://dash-bootstrap-components.opensource.faculty.ai/l/components/layout
-column1 = dbc.Col(
+header = dbc.Row(
     [
         dcc.Markdown(
             """
-        
-            ## Predictions
+            ## Predictions  
 
-            Your instructions: How to use your app to get new predictions.
-
-            """
+            ###### Input a song you like and it's artist, then say if you want more, less or the same of each of the features."""
         ),
-    ],
-    md=4,
-)
-
-column2 = dbc.Col(
-    [
-
     ]
 )
 
-layout = dbc.Row([column1, column2])
+
+features = []
+
+for feature in feature_list:
+    _id = feature+'-radio-button-group'
+    radio_group_id_list.append(_id)
+    features.extend([
+        html.P(feature.capitalize(), style=style),
+        dbc.RadioItems(options=[
+                {"label": option.capitalize(), "value": option} for option in options
+            ], 
+            id=_id,
+            value="Same",
+            inline=True,
+        )]
+    )
+
+features = dbc.Col(features, md=4)
+
+
+
+predictions = dbc.Col([
+    dbc.Row([
+        dbc.Col([
+            dbc.Label("Song Title", style={'margin-top': margin_top}),
+            dbc.Input(id="title", placeholder=current_title, type="text", bs_size='sm'),
+        ], width=7),
+        dbc.Col([
+            dbc.Label("Song Artist", style={'margin-top': margin_top}),
+            dbc.Input(id="artist", placeholder=current_artist, type="text", bs_size='sm'),
+        ], width=5),
+    ]),
+    dcc.Markdown(
+        children=['&nbsp  \n'.join([': '.join([str(l), str(r)]) for l, r in current_selections.items()])],
+        style={
+            'margin-top': margin_top
+        },
+        id='selected-features'
+    ),
+])
+
+body = dbc.Row([features, predictions])
+
+layout = dbc.Col([header, body])
+
+
+
+@app.callback(
+    [Output('selected-features', 'children')],
+    [Input(radio_group_id, 'value') for radio_group_id in radio_group_id_list])
+def render_predict(*values):
+    for feature, value in zip(feature_list, values):
+            current_selections[feature] = value
+    return ['&nbsp  \n'.join([': '.join([str(l), str(r)]) for l, r in current_selections.items()])]
+
+

@@ -51,7 +51,8 @@ footer = dbc.Container(
             html.A(html.I(className='fab fa-github-square mr-1'), 
                    href='https://github.com/Build-Week-Track-Team-7'),
         ])
-    )
+    ),
+
 )
 
 # Layout docs:
@@ -81,6 +82,8 @@ def display_page(pathname):
         return process.layout
     else:
         return dcc.Markdown('## Page not found')
+
+
 
 # Run app server: https://dash.plot.ly/getting-started
 if __name__ == '__main__':

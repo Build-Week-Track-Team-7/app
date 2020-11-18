@@ -12,17 +12,22 @@ music_df = music_df.drop(columns=['artists', 'release_date', 'id'])
 music_scale = pd.DataFrame(data=StandardScaler().fit_transform(music_df),
                            columns=music_df.columns,
                            index=music_df.index)
+
+
+music_scale_sample = music_scale.sample(500, random_state=42)
+music_sample = music_df.sample(5000, random_state=42)
+
+
 # creating cluster defenition to call back when running kmeans
 kmeans = KMeans(n_clusters=10, random_state=42)
-kmeans.fit(music_scale.values)
+kmeans.fit(music_sample.values)
 # find the centers of the Kmeans data
-centers = kmeans.cluster_centers_
+# centers = kmeans.cluster_centers_
 # prepare the lables of Kmeans for graphing
 labels = kmeans.labels_
 # adding lables to color code each group type
-music_df['group'] = labels.astype(str)
+music_sample['group'] = labels.astype(str)
 # sampling the dataset to make a more managable graph
-music_sample = music_df.sample(5000, random_state=42)
 # color dictionary
 colors = {'0': 'crimson',
           '1': '#4da6ff',

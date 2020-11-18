@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 
 from app import app
-from graphing3d import fig
+# from graphing3d import fig
 
 column1 = dbc.Col(
     [

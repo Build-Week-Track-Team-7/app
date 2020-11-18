@@ -92,9 +92,7 @@ predictions = dbc.Col([
     ]),
     dcc.Markdown(
         children=['&nbsp  \n'.join([': '.join([str(l), str(r)]) for l, r in current_selections.items()])],
-        style={
-            'margin-top': margin_top
-        },
+        style={'margin-top': margin_top},
         id='selected-features'
     ),
 ])

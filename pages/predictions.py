@@ -15,9 +15,6 @@ right = 'Higher'
 
 options = [left, middle, right]
 
-feature_list = ['Danceability', 'test2', 'test3', 'test4', 'test5']
-
-_id = '-id'
 default_value = 'Same'
 
 radio_color = 'info'
@@ -39,7 +36,7 @@ current_title = "Song Title..."
 current_artist = "Song Artist..."
 
 current_selections = {
-    feature: default_value for feature in feature_list
+    feature: default_value for feature in feature_order
 }
 
 
@@ -56,9 +53,11 @@ header = dbc.Row(
 )
 
 
+
+
 features = []
 
-for feature in feature_list:
+for feature in feature_importance:
     _id = feature+'-radio-button-group'
     radio_group_id_list.append(_id)
     features.extend([
@@ -71,7 +70,6 @@ for feature in feature_list:
             inline=True,
         )]
     )
-
 features = dbc.Col(features, md=4)
 
 
@@ -86,16 +84,13 @@ predictions = dbc.Col([
             dbc.Label("Song Artist", style={'margin-top': margin_top}),
             dbc.Input(id="artist", placeholder=current_artist, type="text", bs_size='sm'),
         ], width=5),
-        dbc.Col([
-            dbc.Button("Predict", id='predict-button', color='success', size="lg", style={'margin-top': '30px'})
-        ])
     ]),
+    dbc.Button("Get Song", id='get-song-button', color='success', size="md", style={'margin-top': '30px'},),
     dcc.Markdown(
         children=['&nbsp  \n'.join([': '.join([str(l), str(r)]) for l, r in current_selections.items()])],
         style={'margin-top': margin_top},
         id='selected-features'
-    ),
-])
+    ),])
 
 body = dbc.Row([features, predictions])
 
@@ -105,15 +100,18 @@ layout = dbc.Col([header, body])
 
 @app.callback(
     [Output('selected-features', 'children')],
-    [Input('predict-button', 'n_clicks')],
+    [Input('get-song-button', 'n_clicks')],
     [State(radio_group_id, 'value') for radio_group_id in radio_group_id_list],)
 def render_prediction(n_clicks, *values):
-    for feature, value in zip(feature_list, values):
+    
+    for feature, value in zip(feature_importance, values):
             current_selections[feature] = value
 
-    data = Antony.get_prediction(current_selections)
+    data = Jeannine.order_features(current_selections)
     print(data)
 
     return ['&nbsp  \n'.join([': '.join([str(l), str(r)]) for l, r in current_selections.items()])]
 
 
+def get_song_info(title, artist, year):
+    pass

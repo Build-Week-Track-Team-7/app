@@ -89,7 +89,7 @@ predictions = dbc.Col([
         dbc.Col([
             dbc.Label("Song Artist", style={'margin-top': margin_top}),
             dbc.Input(id="artist", placeholder=current_artist, type="text", bs_size='sm'),
-            dbc.Button("Get New Songs", id='song-search', color='success', size="md", style={'margin-top': '15px'},),
+            dbc.Button("Get New Songs", id='get-new-songs', color='success', size="md", style={'margin-top': '15px'},),
             dcc.Markdown(
                 children=['song suggestions'],
                 style={'margin-top': margin_top},
@@ -109,14 +109,11 @@ layout = dbc.Col([header, body])
     [State("title", "value"), State("artits", "value")])
 def get_song_info(n_clicks, title, artist):
     print(title, artist)
-
-    return get_spotify_song_info(title, artist)
-    
-    return ['&nbsp  \n'.join([': '.join([str(l), str(r)]) for l, r in song_info.items()])]
+    return [title, artist]
 
 
 @app.callback(Output('selected-features', 'children'),
-    [Input('song-search', 'n_clicks')],
+    [Input('get-new-songs', 'n_clicks')],
     [State("title", "value"),
     State("artist", "value")]+
     [State(_id, 'value') for _id in radio_group_id_list])

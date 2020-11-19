@@ -64,7 +64,7 @@ def get_spotify_song_info(title=None, artist=None):
     if song_features[0]:
         for s in song_features:
             for feat in list(s):
-                if feat not in feature_order:
+                if feat not in full_feature_order:
                     del s[feat]
 
     return song_features

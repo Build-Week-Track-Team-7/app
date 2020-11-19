@@ -12,6 +12,8 @@ from app import app
 # kmeans = Antony.load_kmeans('pipeline.joblib')
 song = Song()
 
+music_df = pd.read_csv('music.csv', index_col=['name'])
+
 left = 'Lower'
 middle = 'Same'
 right = 'Higher'
@@ -30,6 +32,7 @@ style = {
     'margin-left': margin_left,
     'font-weight': 'bold'
 }
+
 
 
 
@@ -98,9 +101,10 @@ predictions = dbc.Col([
     ]),
 ])
 
-body = dbc.Row([features, predictions])
+body = dbc.Row([predictions, features])
 
 layout = dbc.Col([header, body])
+
 
 
 @app.callback(Output('selected-features', 'children'),
@@ -127,7 +131,7 @@ def get_song_info(n_clicks, name, artist):
             displayed_song_features[key] = value
 
     global song
-    song = Song(data=[song_info], columns=feature_order)
+    song = Song(data=[song_info], columns=full_feature_order)
     print(song)
 
     return 'If the track below is not what you want, try being more specific. &nbsp  \n\n' + '&nbsp  \n'.join([f"{l.capitalize()}: {r}" for l, r in displayed_song_features.items()])
@@ -149,6 +153,12 @@ def get_new_songs(n_clicks, name, artist, *values):
 
     song = shift_features(song, selected_features)
 
-    song_group = scale_and_kmeans(song)
+    song = process(song, Antony)
 
-    return [song_group]
+    song_group = int(scale_and_kmeans(song)[0])
+
+    same_group = music_df[music_df['group'] == song_group]
+
+    new_songs = same_group.sample(10)
+
+    return '&nbsp \n\n'.join(x for x in new_songs.index)

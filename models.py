@@ -8,6 +8,29 @@ from features import *
 from joblib import load
 
 class Antony:
+    feature_order = [
+        'acousticness',	
+        'danceability',	
+        'duration_ms',
+        'energy',
+        'explicit',
+        'instrumentalness',
+        'key',
+        'liveness',
+        'loudness',
+        'mode',
+        'popularity',
+        'speechiness',
+        'tempo',
+        'valence',
+        'year',
+    ]
+
+    def wrangle(df):
+        df = df.copy()
+        df = df[Antony.feature_order]
+        return df
+
     def load_kmeans(model_path):
         kmeans = load(model_path)
         return kmeans
@@ -50,11 +73,10 @@ class Antony:
 
 
 class Jeannine:
-    def order_features(data):
-        in_order = [np.NaN for _ in feature_order]
-        for feature, value in data.items():
-            in_order[feature_order.index(feature.lower())] = value
-        return in_order
+    feature_order = full_feature_order[:]
+
+    def wrangle(df):
+        return df
 
 class Shannon:
     pass
@@ -68,9 +90,24 @@ def scale_and_kmeans(song):
     scale = Antony.load_scalar('scale.joblib')
     kmeans = Antony.load_kmeans('pipeline.joblib')
 
-    song = scale.transform(song)
-    song = kmeans.predict(song)
+    og_song = song.copy()
 
+    song_scaled = scale.transform(og_song)
+
+    song = pd.DataFrame(data=song_scaled, columns=og_song.columns, index=og_song.index)
+
+    prediction = kmeans.predict(song)
+
+
+
+    return prediction
+
+def process(song, className=Antony):
+    if className not in [Antony, Jeannine]: # , Shannon]:
+        raise ValueError('Unknown class to order features.')
+    
+    song = song.copy()
+    song = className.wrangle(song)
     return song
 
 
@@ -85,11 +122,11 @@ one_range = [
 ]
 
 set_range = {
-    'key': [-1, 12],
-    'loudness': [-60, 1],
-    'popularity': [0, 101],
-    'year': [1920, 2021],
-    'explicit': [0, 2]
+    'key': [-1, 11],
+    'loudness': [-60, 0],
+    'popularity': [0, 100],
+    'year': [1920, 2020],
+    'explicit': [0, 1]
 }
 
 any_range = [
@@ -99,24 +136,27 @@ any_range = [
 
 def shift_features(song, shift_values):
     song = song.copy()
+    song['year'] = song['year'].astype(int)
+    song['explicit'] = song['explicit'].astype(int)
     for feature in shift_values:
-        if song[feature][0]:
-            if feature in one_range:
-                shift_value = .1
-                if shift_values[feature] == 'Higher':
-                    song.loc[:, feature] = min(song[feature][0] + shift_value, 1.0)
-                elif shift_values[feature] == 'Lower':
-                    song.loc[:, feature] = max(song[feature][0] - shift_value, 0.0)
-            elif feature in set_range:
-                l, r = set_range[feature]
-                if shift_values[feature] == 'Higher':
-                    song.loc[:, feature] = min(song[feature][0] + int(len(range(l, r))/10), r)
-                elif shift_values[feature] == 'Lower':
-                    song.loc[:, feature] = max(song[feature][0] - int(len(range(l, r))/10), l)
-            elif feature in any_range:
-                if shift_values[feature] == 'Higher':
-                    song.loc[:, feature] = int(song[feature][0] * 1.1)
-                elif shift_values[feature] == 'Lower':
-                    song.loc[:, feature] = int(song[feature][0] * 0.9)
+        if feature in song.columns:
+            if song[feature][0]:
+                if feature in one_range:
+                    shift_value = .1
+                    if shift_values[feature] == 'Higher':
+                        song.loc[:, feature] = min(song[feature][0] + shift_value, 1.0)
+                    elif shift_values[feature] == 'Lower':
+                        song.loc[:, feature] = max(song[feature][0] - shift_value, 0.0)
+                elif feature in set_range:
+                    l, r = set_range[feature]
+                    if shift_values[feature] == 'Higher':
+                        song.loc[:, feature] = min(song[feature][0] + int(len(range(l, r+1))/10), r)
+                    elif shift_values[feature] == 'Lower':
+                        song.loc[:, feature] = max(song[feature][0] - int(len(range(l, r+1))/10), l)
+                elif feature in any_range:
+                    if shift_values[feature] == 'Higher':
+                        song.loc[:, feature] = int(song[feature][0] * 1.1)
+                    elif shift_values[feature] == 'Lower':
+                        song.loc[:, feature] = int(song[feature][0] * 0.9)
 
     return song

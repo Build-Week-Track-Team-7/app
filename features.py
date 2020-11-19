@@ -1,4 +1,4 @@
-feature_order = ['acousticness','artists','danceability','duration_ms','energy','explicit','id','instrumentalness','key','liveness','loudness','mode','name','popularity','release_date','speechiness','tempo','valence','year']
+full_feature_order = ['acousticness','artists','danceability','duration_ms','energy','explicit','id','instrumentalness','key','liveness','loudness','mode','name','popularity','release_date','speechiness','tempo','valence','year']
 
 gathered_feature_order = [
     'energy',

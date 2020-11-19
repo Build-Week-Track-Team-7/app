@@ -79,4 +79,4 @@ Code Review Team Members:
 
 Alexander Barriga, Taylor Curran, Regina Dircio, Robert Guiffre, Thomas Phillips
 
-Instructions
+[Instructions](https://lambdaschool.github.io/ds/unit2/dash-template/)

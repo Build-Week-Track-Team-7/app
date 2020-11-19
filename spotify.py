@@ -3,6 +3,8 @@ from os import getenv
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 
+from features import *
+
 CLIENT_ID = getenv('CLIENT_ID')
 CLIENT_SECRET = getenv('CLIENT_SECRET')
 # REDIRECT_URI = os.getenv('REDIRECT_URI')
@@ -32,7 +34,13 @@ def get_spotify_song_info(title=None, artist=None):
 
     ids = [x['id'] for x in data]
     names = [x['name'] for x in data]
-    artists = [y['name'] for x in data for y in x['artists']]
+    artists = []
+    for x in data:
+        arts = []
+        for y in x['artists']:
+            arts.append(y['name'])
+        artists.append(arts)
+    # artists = [y['name'] for x in data for y in x['artists']]
     explicits = [x['explicit'] for x in data]
     popularities = [x['popularity'] for x in data]
     try:
@@ -47,11 +55,17 @@ def get_spotify_song_info(title=None, artist=None):
     for i, song in enumerate(song_features):
         if len(names) > i:
             song['name'] = names[i]
-            song['artists'] = f"['{artists[i]}']"
+            song['artists'] = artists[i]
             song['explicit'] = explicits[i]
             song['popularity'] = popularities[i]
             song['release_date'] = release_dates[i]
             song['year'] = years[i]
+    
+    if song_features[0]:
+        for s in song_features:
+            for feat in list(s):
+                if feat not in feature_order:
+                    del s[feat]
 
     return song_features
 

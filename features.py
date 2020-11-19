@@ -1,19 +1,39 @@
 feature_order = ['acousticness','artists','danceability','duration_ms','energy','explicit','id','instrumentalness','key','liveness','loudness','mode','name','popularity','release_date','speechiness','tempo','valence','year']
 
-feature_importance = [
- 'name',
- 'energy',
- 'danceability',
- 'liveness',
- 'key',
- 'tempo',
- 'duration_ms',
- 'instrumentalness',
- 'loudness',
- 'valence',
- 'acousticness',
- 'popularity',
- 'speechiness',]
+gathered_feature_order = [
+    'energy',
+    'danceability',
+    'liveness',
+    'key',
+    'tempo',
+    'duration_ms',
+    'instrumentalness',
+    'loudness',
+    'valence',
+    'acousticness',
+    'popularity',
+    'speechiness',
+]
+
+displayed_feature_order = [
+    'name',
+    'artists',
+    'year',
+    'energy',
+    'danceability',
+    'liveness',
+    'key',
+    'tempo',
+    'duration_ms',
+    'instrumentalness',
+    'loudness',
+    'valence',
+    'acousticness',
+    'popularity',
+    'speechiness',    
+]
+
+
 
 non_selectable_features = ['artists', 'explicit', 'id', 'name', 'release_date', 'year', 'mode']
 

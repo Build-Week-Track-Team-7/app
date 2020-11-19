@@ -31,12 +31,10 @@ style = {
     'font-weight': 'bold'
 }
 
+
+
 current_title = "Song Title..."
 current_artist = "Song Artist..."
-
-song_info = {
-    feature: default_value for feature in feature_order
-}
 
 
 # https://dash-bootstrap-components.opensource.faculty.ai/l/components/layout
@@ -49,7 +47,7 @@ header =dcc.Markdown(
 
 features = []
 
-for feature in feature_importance:
+for feature in gathered_feature_order:
     _id = feature+'-radio-button-group'
     radio_group_id_list.append(_id)
     features.extend([
@@ -86,7 +84,7 @@ predictions = dbc.Col([
                 style={'margin-top': margin_top},
                 id='selected-features'
             ),
-        ], width=6),
+        ], width=7),
         dbc.Col([
             dbc.Label("Song Artist", style={'margin-top': margin_top}),
             dbc.Input(id="artist", placeholder=current_artist, type="text", bs_size='sm'),
@@ -96,13 +94,44 @@ predictions = dbc.Col([
                 style={'margin-top': margin_top},
                 id='song-suggestions'
             ),
-        ], width=6),
+        ], width=5),
     ]),
 ])
 
 body = dbc.Row([features, predictions])
 
 layout = dbc.Col([header, body])
+
+
+@app.callback(Output('selected-features', 'children'),
+    [Input('get-song-info', 'n_clicks')],
+    [State("name", "value"), State("artist", "value")])
+def get_song_info(n_clicks, name, artist):
+    if not n_clicks:
+        return ''
+    song_info = get_spotify_song_info(name, artist)[0]
+
+    if song_info == 'NO INPUT PROVIDED':
+        return song_info
+    elif not song_info:
+        return ["No results: &nbsp  \nMakes sures you're spelling and gramer is corect."]
+
+    displayed_song_features = {
+        feature_names: None for feature_names in displayed_feature_order
+    }
+
+    for key, value in song_info.items():
+        if key in displayed_song_features:
+            if isinstance(value, list):
+                value = ', '.join(value)
+            displayed_song_features[key] = value
+
+    global song
+    song = Song(data=[song_info], columns=feature_order)
+    print(song)
+
+    return 'If the track below is not what you want, try being more specific. &nbsp  \n\n' + '&nbsp  \n'.join([f"{l.capitalize()}: {r}" for l, r in displayed_song_features.items()])
+
 
 @app.callback(Output('song-suggestions', 'children'),
     [Input('get-new-songs', 'n_clicks')],
@@ -113,34 +142,13 @@ def get_new_songs(n_clicks, name, artist, *values):
     if not n_clicks:
         return ''
     global song
-    print(song)
 
-    return 'NOT IMPLEMENTED'
-
-@app.callback(Output('selected-features', 'children'),
-    [Input('get-song-info', 'n_clicks')],
-    [State("name", "value"), State("artist", "value")])
-def get_song_info(n_clicks, name, artist):
-    if not n_clicks:
-        return ''
-    global song
-    raw_info = get_spotify_song_info(name, artist)
-
-    if raw_info[0] == 'NO INPUT PROVIDED':
-        return raw_info
-    elif not raw_info[0]:
-        return ["No results &nbsp  \nMakes sures you're spelling and gramer is corect"]
-
-    info = {
-        feature_names: None for feature_names in feature_importance
+    selected_features = {
+        feature: value for feature, value in zip(gathered_feature_order, values)
     }
 
-    print(raw_info)
+    song = shift_features(song, selected_features)
 
+    song_group = scale_and_kmeans(song)
 
-    for key, value in raw_info[0].items():
-        if key in info:
-            info[key] = value
-
-    return 'If the track below is not what you want, try being more specific &nbsp  \n\n' + '&nbsp  \n'.join([f'{l}: {r}' for l, r in info.items()])
-
+    return [song_group]

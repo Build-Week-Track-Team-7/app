@@ -7,7 +7,7 @@ Colab link(s):
 
 Base Model - https://github.com/Build-Week-Track-Team-7/explore/blob/main/kmeans_pca_tests.ipynb
 
-Neural Network Model - https://github.com/Build-Week-Track-Team-7/explore/blob/main/Spotify_recommender_NN_explore_RJProctor.ipynb
+Neural Network Model - https://github.com/Build-Week-Track-Team-7/explore/blob/main/Shannon_Li_Spotify_recommender_NN_explore_RJProctor.ipynb
 
 Source data: https://github.com/Build-Week-Track-Team-7/explore/blob/main/data.csv
 

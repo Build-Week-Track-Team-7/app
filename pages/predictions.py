@@ -103,16 +103,7 @@ body = dbc.Row([features, predictions])
 
 layout = dbc.Col([header, body])
 
-
 @app.callback(Output('song-suggestions', 'children'),
-    [Input('get-song-info', 'n_clicks')],
-    [State("title", "value"), State("artits", "value")])
-def get_song_info(n_clicks, title, artist):
-    print(title, artist)
-    return [title, artist]
-
-
-@app.callback(Output('selected-features', 'children'),
     [Input('get-new-songs', 'n_clicks')],
     [State("title", "value"),
     State("artist", "value")]+
@@ -120,3 +111,12 @@ def get_song_info(n_clicks, title, artist):
 def get_new_songs(n_clicks, title, artist, *values):
     print(title, artist)
     return [title, artist]
+
+@app.callback(Output('selected-features', 'children'),
+    [Input('get-song-info', 'n_clicks')],
+    [State("title", "value"), State("artist", "value")])
+def get_song_info(n_clicks, title, artist):
+    print(title, artist)
+    return [title, artist]
+
+

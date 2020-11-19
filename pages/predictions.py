@@ -12,7 +12,7 @@ from app import app
 # kmeans = Antony.load_kmeans('pipeline.joblib')
 song = Song()
 
-music_df = pd.read_csv('music.csv', index_col=['name'])
+music_df = pd.read_csv('music.csv', index_col=['name', 'artists'])
 
 left = 'Lower'
 middle = 'Same'
@@ -87,7 +87,7 @@ predictions = dbc.Col([
                 style={'margin-top': margin_top},
                 id='selected-features'
             ),
-        ], width=7),
+        ], width=6),
         dbc.Col([
             dbc.Label("Song Artist", style={'margin-top': margin_top}),
             dbc.Input(id="artist", placeholder=current_artist, type="text", bs_size='sm'),
@@ -97,11 +97,11 @@ predictions = dbc.Col([
                 style={'margin-top': margin_top},
                 id='song-suggestions'
             ),
-        ], width=5),
+        ], width=6),
     ]),
-])
+], md=8)
 
-body = dbc.Row([predictions, features])
+body = dbc.Container(dbc.Row([predictions, features]))
 
 layout = dbc.Col([header, body])
 
@@ -147,6 +147,9 @@ def get_new_songs(n_clicks, name, artist, *values):
         return ''
     global song
 
+    if not len(song):
+        return 'No song being checked.'
+
     selected_features = {
         feature: value for feature, value in zip(gathered_feature_order, values)
     }
@@ -161,4 +164,4 @@ def get_new_songs(n_clicks, name, artist, *values):
 
     new_songs = same_group.sample(10)
 
-    return '&nbsp \n\n'.join(x for x in new_songs.index)
+    return '&nbsp  \n\n'.join('&nbsp  \nArtists: '.join(x).replace('[', '').replace(']', '').replace("'", '') for x in new_songs.index)

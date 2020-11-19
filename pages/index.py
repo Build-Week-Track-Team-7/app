@@ -5,8 +5,9 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
 
+
 from app import app
-from graphing3d import plotlyfromjson
+from models import Antony
 
 column1 = dbc.Col(
     [
@@ -31,8 +32,9 @@ column1 = dbc.Col(
 
 graph = dbc.Col(
     [
-        dcc.Graph(figure=plotlyfromjson('frontpagefig.json')),
+        dcc.Graph(figure=Antony.plotlyfromjson('frontpagefig.json')),
     ]
 )
 
 layout = dbc.Row([column1, graph])
+

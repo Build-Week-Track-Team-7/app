@@ -165,3 +165,5 @@ def get_new_songs(n_clicks, name, artist, *values):
     new_songs = same_group.sample(10)
 
     return '&nbsp  \n\n'.join('&nbsp  \nArtists: '.join(x).replace('[', '').replace(']', '').replace("'", '') for x in new_songs.index)
+
+    

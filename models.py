@@ -98,6 +98,7 @@ def scale_and_kmeans(song):
 
     prediction = kmeans.predict(song)
 
+    print(prediction)
 
 
     return prediction

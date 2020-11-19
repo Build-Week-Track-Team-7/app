@@ -12,6 +12,8 @@ gunicorn = "*"
 plotly = "*"
 pandas = "*"
 sklearn = "*"
+python-dotenv = "*"
+spotipy = "*"
 
 [requires]
 python_version = "3"

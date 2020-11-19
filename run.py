@@ -29,12 +29,12 @@ navbar = dbc.NavbarSimple(
     dark=False
 )
 
-footer = html.Footer(
+footer = dbc.Container(
     dbc.Row(
         dbc.Col([
             html.P(
                 [
-                    html.Span('Lambda School - Build Week 3', className='mr-1'),
+                    html.Span('Lambda School - Build Week', className='mr-1'),
                 ], 
                 className='lead'
             ),

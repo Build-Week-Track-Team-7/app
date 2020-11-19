@@ -54,3 +54,8 @@ class Jeannine:
 
 class Shannon:
     pass
+
+
+class Song(pd.DataFrame):
+    pass
+

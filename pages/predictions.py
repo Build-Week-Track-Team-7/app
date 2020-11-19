@@ -9,7 +9,8 @@ from spotify import get_spotify_song_info
 from models import *
 from app import app
 
-kmeans = Antony.load_kmeans('pipeline.joblib')
+# kmeans = Antony.load_kmeans('pipeline.joblib')
+song = Song()
 
 left = 'Lower'
 middle = 'Same'
@@ -78,14 +79,14 @@ predictions = dbc.Col([
     dbc.Row([
         dbc.Col([
             dbc.Label("Song Title", style={'margin-top': margin_top}),
-            dbc.Input(id="title", placeholder=current_title, type="text", bs_size='sm'),
+            dbc.Input(id="name", placeholder=current_title, type="text", bs_size='sm'),
             dbc.Button("Get Song Info", id='get-song-info', color='warning', size="md", style={'margin-top': '15px'},),
             dcc.Markdown(
                 children=['features'],
                 style={'margin-top': margin_top},
                 id='selected-features'
             ),
-        ], width=5),
+        ], width=6),
         dbc.Col([
             dbc.Label("Song Artist", style={'margin-top': margin_top}),
             dbc.Input(id="artist", placeholder=current_artist, type="text", bs_size='sm'),
@@ -95,7 +96,7 @@ predictions = dbc.Col([
                 style={'margin-top': margin_top},
                 id='song-suggestions'
             ),
-        ], width=5),
+        ], width=6),
     ]),
 ])
 
@@ -105,18 +106,41 @@ layout = dbc.Col([header, body])
 
 @app.callback(Output('song-suggestions', 'children'),
     [Input('get-new-songs', 'n_clicks')],
-    [State("title", "value"),
+    [State("name", "value"),
     State("artist", "value")]+
     [State(_id, 'value') for _id in radio_group_id_list])
-def get_new_songs(n_clicks, title, artist, *values):
-    print(title, artist)
-    return [title, artist]
+def get_new_songs(n_clicks, name, artist, *values):
+    if not n_clicks:
+        return ''
+    global song
+    print(song)
+
+    return 'NOT IMPLEMENTED'
 
 @app.callback(Output('selected-features', 'children'),
     [Input('get-song-info', 'n_clicks')],
-    [State("title", "value"), State("artist", "value")])
-def get_song_info(n_clicks, title, artist):
-    print(title, artist)
-    return [title, artist]
+    [State("name", "value"), State("artist", "value")])
+def get_song_info(n_clicks, name, artist):
+    if not n_clicks:
+        return ''
+    global song
+    raw_info = get_spotify_song_info(name, artist)
 
+    if raw_info[0] == 'NO INPUT PROVIDED':
+        return raw_info
+    elif not raw_info[0]:
+        return ["No results &nbsp  \nMakes sures you're spelling and gramer is corect"]
+
+    info = {
+        feature_names: None for feature_names in feature_importance
+    }
+
+    print(raw_info)
+
+
+    for key, value in raw_info[0].items():
+        if key in info:
+            info[key] = value
+
+    return 'If the track below is not what you want, try being more specific &nbsp  \n\n' + '&nbsp  \n'.join([f'{l}: {r}' for l, r in info.items()])
 

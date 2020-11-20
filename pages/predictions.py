@@ -44,7 +44,7 @@ header =dcc.Markdown(
             """
             ## Predictions  
 
-            ###### Input a song you like and it's artist, then say if you want more, less or the same of each of the features."""
+            ###### Input a song you like and its artist (optional), then say if you want more, less, or the same of each of the features."""
 )
 
 features = []

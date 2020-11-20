@@ -139,7 +139,7 @@ def shift_features(song, shift_values):
     song['explicit'] = song['explicit'].astype(int)
     for feature in shift_values:
         if feature in song.columns:
-            if song[feature][0] not None:
+            if song[feature][0] != None:
                 if feature in one_range:
                     shift_value = .1
                     if shift_values[feature] == 'Higher':

@@ -71,6 +71,7 @@ for feature in gathered_feature_order:
             id=_id,
             value="Same",
             inline=True,
+            persistence=True
         )]
     )
 features = dbc.Col(features, md=4)

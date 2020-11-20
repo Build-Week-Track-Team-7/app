@@ -5,12 +5,16 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 
-from spotify import get_spotify_song_info
+from time import time
+import numpy as np
+
+from spotify import get_spotify_song_info, get_song_links
 from models import *
 from app import app
 
 # kmeans = Antony.load_kmeans('pipeline.joblib')
 song = Song()
+song_info = []
 
 music_df = pd.read_csv('music.csv', index_col=['name', 'artists'])
 
@@ -33,14 +37,9 @@ style = {
     'font-weight': 'bold'
 }
 
-
-
-
 current_title = "Song Title..."
 current_artist = "Song Artist..."
 
-
-# https://dash-bootstrap-components.opensource.faculty.ai/l/components/layout
 header =dcc.Markdown(
             """
             ## Predictions  
@@ -113,6 +112,8 @@ layout = dbc.Col([header, body])
 def get_song_info(n_clicks, name, artist):
     if not n_clicks:
         return ''
+
+    global song_info
     song_info = get_spotify_song_info(name, artist)[0]
 
     if song_info == 'NO INPUT PROVIDED':
@@ -132,7 +133,6 @@ def get_song_info(n_clicks, name, artist):
 
     global song
     song = Song(data=[song_info], columns=full_feature_order)
-    print(song)
 
     return 'If the track below is not what you want, try being more specific. &nbsp  \n\n' + '&nbsp  \n'.join([f"{l.capitalize()}: {r}" for l, r in displayed_song_features.items()])
 
@@ -146,27 +146,36 @@ def get_new_songs(n_clicks, name, artist, *values):
     if not n_clicks:
         return ''
     global song
+    global song_info
+
+    song = Song(data=[song_info], columns=full_feature_order)
 
     if not len(song):
         return 'No song being checked.'
+
+    np.random.seed(int(time()))
 
     selected_features = {
         feature: value for feature, value in zip(gathered_feature_order, values)
     }
 
     song = shift_features(song, selected_features)
-
     song = process(song, Antony)
-
     song_group = int(scale_and_kmeans(song)[0])
-
     same_group = music_df[music_df['group'] == song_group]
 
-    print(same_group.head(20))
-    print(len(same_group))
 
     new_songs = same_group.sample(10)
+    song_group_links = get_song_links(new_songs['id'].values)
 
-    return '&nbsp  \n\n'.join('&nbsp  \nArtists: '.join(x).replace('[', '').replace(']', '').replace("'", '') for x in new_songs.index)
+    s_return = ''
+    for sng, link in zip(new_songs.index, song_group_links):
+        # s_return += f"<a href='{link}' target='_blank'>{sng[0]}</a>  \n"
+        s_return += f"[{sng[0]}]({link})  \n"
+        s_return += f"""Artists:&nbsp&nbsp&nbsp{sng[1].replace('[', '').replace(']', '').replace("'", '')}  \n\n"""
+
+    return s_return
+
+    # return '&nbsp  \n\n'.join('&nbsp  \nArtists: '.join(x).replace('[', '').replace(']', '').replace("'", '') for x in new_songs.index)
 
 

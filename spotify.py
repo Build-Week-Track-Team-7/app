@@ -15,6 +15,17 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
     client_secret=CLIENT_SECRET
 ))
 
+
+def get_song_links(ids=[]):
+    link = "external_urls"
+    links = []
+    tracks = sp.tracks(ids)['tracks']
+
+    for track in tracks:
+        links.append(track[link]['spotify'])
+
+    return links
+
 def get_song_audio_features(ids=[]):
     info = sp.audio_features(ids)
     return info
@@ -70,3 +81,4 @@ def get_spotify_song_info(title=None, artist=None):
     return song_features
 
 # pprint(get_spotify_song_info('freaky friday', 'lil dick'))
+# get_song_links(['6KbQ3uYMLKb5jDxLF7wYDD', '6NxAf7M8DNHOBTmEd3JSO5'])

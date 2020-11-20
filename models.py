@@ -98,16 +98,14 @@ def scale_and_kmeans(song):
 
     prediction = kmeans.predict(song)
 
-    print(prediction)
-
-
     return prediction
+
 
 def process(song, className=Antony):
     if className not in [Antony, Jeannine]: # , Shannon]:
         raise ValueError('Unknown class to order features.')
     
-    song = song.copy()
+    # song = song.copy()
     song = className.wrangle(song)
     return song
 

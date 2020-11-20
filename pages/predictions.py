@@ -148,6 +148,8 @@ def get_new_songs(n_clicks, name, artist, *values):
         return ''
     global song
     global song_info
+    if len(song_info) < 1:
+        return 'Internal Error: Data from input song was not saved or seen  \nTry clicking "Get Song Info" again and then "Get New Songs"'
 
     song = Song(data=[song_info], columns=full_feature_order)
 
@@ -176,7 +178,3 @@ def get_new_songs(n_clicks, name, artist, *values):
         s_return += f"""Artists:&nbsp&nbsp&nbsp{sng[1].replace('[', '').replace(']', '').replace("'", '')}  \n\n"""
 
     return s_return
-
-    # return '&nbsp  \n\n'.join('&nbsp  \nArtists: '.join(x).replace('[', '').replace(']', '').replace("'", '') for x in new_songs.index)
-
-
